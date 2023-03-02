@@ -1,22 +1,26 @@
-﻿using Assets.Scripts.Items.ViewModels;
+﻿using Assets.Scripts.Common;
+using Assets.Scripts.Items.ViewModels;
 using UnityEngine;
 
 namespace Assets.Scripts.Items.Views
 {
-    public class ItemContainerView : MonoBehaviour
+    public class ItemContainerView : View<ItemContainerVM>
     {
-        [SerializeField] private ItemContainerVM vm;
-        [SerializeField] private SlotView slotPrefab;
-
-        public void Start()
+        protected override void OnViewModelSet()
         {
-            for (int i = 0; i < vm.Container.Size; ++i)
-            {
-                var slot = vm.Container.GetSlot(i);
-                var view = Instantiate(slotPrefab);
-                view.transform.SetParent(this.transform, false);
-                view.SetSlot(slot);
-            }
+            this.gameObject.SetActive(ViewModel.Visible.Value);
+
+            ViewModel.Visible.OnChanged += Visible_OnChanged;
+        }
+
+        protected override void OnViewModelUnset()
+        {
+            ViewModel.Visible.OnChanged -= Visible_OnChanged;
+        }
+
+        private void Visible_OnChanged(bool newValue, bool oldValue)
+        {
+            this.gameObject.SetActive(newValue);
         }
     }
 }
