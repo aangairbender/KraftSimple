@@ -110,6 +110,10 @@ namespace Assets.Scripts.Items.Models
                 int moved = Math.Min(canMove, source.Quantity);
                 source.Quantity -= moved;
                 destination.Quantity += moved;
+            } else
+            {
+                (source.Item, destination.Item) = (destination.Item, source.Item);
+                (source.Quantity, destination.Quantity) = (destination.Quantity, source.Quantity);
             }
 
             OnChanged();

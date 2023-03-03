@@ -29,6 +29,11 @@ namespace Assets.Scripts.Items.ViewModels
             container.OnChanged += Container_OnChanged;
         }
 
+        public void Move(int fromSlotIndex, int toSlotIndex, int quantity)
+        {
+            container.Move(fromSlotIndex, toSlotIndex);
+        }
+
         private void Container_OnChanged()
         {
             NotifyOfPropertyChange(nameof(Slots));

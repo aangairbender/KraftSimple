@@ -50,10 +50,14 @@ public class InputCharacterController : MonoBehaviour
         var direction = transform.right * movement.x + transform.forward * movement.y;
         characterController.Move(direction * Time.deltaTime * MovementSpeed);
 
-        var lookDelta = inputActions.Character.Look.ReadValue<Vector2>();
-        transform.Rotate(Vector3.up, lookDelta.x * MouseSensitivity, Space.Self);
+        var inventory = GameObject.Find("Inventory");
+        if (inventory == null)
+        {
+            var lookDelta = inputActions.Character.Look.ReadValue<Vector2>();
+            transform.Rotate(Vector3.up, lookDelta.x * MouseSensitivity, Space.Self);
 
-        LookFrom.Rotate(Vector3.right, -lookDelta.y * MouseSensitivity, Space.Self);
+            LookFrom.Rotate(Vector3.right, -lookDelta.y * MouseSensitivity, Space.Self);
+        }
 
         if (wasGrounded)
         {

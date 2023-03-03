@@ -9,22 +9,29 @@ namespace Assets.Scripts.Game.ViewModels
     public class GameVM : ViewModel
     {
         private ItemContainer inventory;
-        private readonly EventLoopService eventLoopService;
+        private ItemContainer hotbar;
 
         public ItemContainerVM InventoryVM { get; }
+        public ItemContainerVM HotbarVM { get; }
 
         public GameVM(EventLoopService eventLoopService)
         {
-            this.eventLoopService = eventLoopService;
             eventLoopService.UpdateEvent += EventLoopService_UpdateEvent;
 
-            inventory = new ItemContainer(16);
+            inventory = new ItemContainer(48);
             InventoryVM = new ItemContainerVM(inventory);
+
+            hotbar = new ItemContainer(10);
+            HotbarVM = new ItemContainerVM(hotbar)
+            {
+                Visible = true
+            };
         }
 
         public void Add(Item item)
         {
             inventory.Add(item, 1);
+            hotbar.Add(item, 1);
         }
 
         private void EventLoopService_UpdateEvent()

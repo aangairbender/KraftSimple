@@ -2,11 +2,13 @@
 using Assets.Scripts.Items.ViewModels;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Items.Views
 {
     public class ItemContainerView : View<ItemContainerVM>
     {
+        [SerializeField] private GridLayoutGroup grid;
         [SerializeField] private SlotView slotViewPrefab;
 
         private List<SlotView> slotViews;
@@ -24,11 +26,11 @@ namespace Assets.Scripts.Items.Views
 
         private void Slots_OnChanged()
         {
+            var slots = ViewModel.Slots;
             if (slotViews == null)
             {
-                CreateSlots();
+                CreateSlots(slots.Count);
             }
-            var slots = ViewModel.Slots;
             for (int i = 0; i < slots.Count; i++)
             {
                 slotViews[i].Item = slots[i].Item;
@@ -36,16 +38,22 @@ namespace Assets.Scripts.Items.Views
             }
         }
 
-        private void CreateSlots()
+        private void CreateSlots(int size)
         {
-            var slots = ViewModel.Slots;
             slotViews = new List<SlotView>();
-            for (int i = 0; i < slots.Count; i++)
+            for (int i = 0; i < size; i++)
             {
-                var slotView = Instantiate(slotViewPrefab, gameObject.transform);
+                var slotView = Instantiate(slotViewPrefab, grid.transform);
                 slotView.name = $"Slot_{i}";
+                slotView.Index = i;
+                slotView.ItemContainerView = this;
                 slotViews.Add(slotView);
             }
+        }
+
+        public void Drag(int fromSlotIndex, int toSlotIndex, int quantity)
+        {
+            ViewModel.Move(fromSlotIndex, toSlotIndex, quantity);
         }
     }
 }

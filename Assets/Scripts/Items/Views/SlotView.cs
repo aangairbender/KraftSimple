@@ -16,6 +16,9 @@ namespace Assets.Scripts.Items.Views
         private Item item;
         private int quantity;
 
+        public ItemContainerView ItemContainerView { get; set; }
+        public int Index { get; set; }
+
         public Item Item
         {
             get => item;
@@ -48,9 +51,12 @@ namespace Assets.Scripts.Items.Views
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            dragPhantom = Instantiate(this.gameObject, Input.mousePosition, Quaternion.identity);
-            dragPhantom.transform.SetParent(transform.parent);
-            dragPhantom.transform.localScale = Vector3.one;
+            dragPhantom = Instantiate(gameObject, gameObject.transform.parent);
+            var layoutElement = dragPhantom.AddComponent<LayoutElement>();
+            layoutElement.ignoreLayout = true;
+            dragPhantom.transform.position = Input.mousePosition;
+            dragPhantom.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 64);
+            dragPhantom.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 64);
 
             // removing background from phantom item
             dragPhantom.transform.GetChild(0).gameObject.SetActive(false);
@@ -64,6 +70,7 @@ namespace Assets.Scripts.Items.Views
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            Debug.Log("end drag");
             Destroy(dragPhantom);
             dragPhantom = null;
         }
@@ -75,9 +82,9 @@ namespace Assets.Scripts.Items.Views
 
         public void OnDrop(PointerEventData eventData)
         {
-            var dropped = eventData.pointerDrag;
-            //var sourceSlot = dropped.GetComponent<SlotView>().slot;
-            //container.Move(sourceSlot, slot);
+            Debug.Log("drop");
+            var sourceSlotView = eventData.pointerDrag.GetComponent<SlotView>();
+            ItemContainerView.Drag(sourceSlotView.Index, this.Index, sourceSlotView.quantity);
         }
     }
 }
