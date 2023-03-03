@@ -114,6 +114,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b55224294952e8941877f22b404d62e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container: {fileID: 11400000, guid: afa8a957d09ab1a40b673d9f6a1953f3, type: 2}
-  slotPrefab: {fileID: 3947923378523326943, guid: 0525e17a6757eba408ed9835a93c218d,
+  slotViewPrefab: {fileID: 3947923378523326943, guid: 0525e17a6757eba408ed9835a93c218d,
     type: 3}

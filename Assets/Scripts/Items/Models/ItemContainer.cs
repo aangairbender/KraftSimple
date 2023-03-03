@@ -7,7 +7,8 @@ namespace Assets.Scripts.Items.Models
     {
         private readonly Slot[] slots;
 
-        public event Action<int> OnSlotChanged;
+        public delegate void ChangedHandler();
+        public event ChangedHandler OnChanged;
 
         public int Size => slots.Length;
 
@@ -37,7 +38,7 @@ namespace Assets.Scripts.Items.Models
             for (int i = 0; i < slots.Length; i++)
             {
                 ref Slot slot = ref slots[i];
-                if (slot.Item != item) continue;
+                if (!SameItem(slot.Item, item)) continue;
 
                 int spaceLeft = item.Data.StackLimit - slot.Quantity;
                 int taken = Math.Min(quantity, spaceLeft);
@@ -60,7 +61,7 @@ namespace Assets.Scripts.Items.Models
                     quantity -= taken;
                 }
             }
-
+            OnChanged();
             return desiredQuantity - quantity;
         } 
 
@@ -73,13 +74,14 @@ namespace Assets.Scripts.Items.Models
             for (int i = slots.Length - 1; i >= 0; i--)
             {
                 ref Slot slot = ref slots[i];
-                if (slot.Item != item) continue;
+                if (!SameItem(slot.Item, item)) continue;
 
                 int taken = Math.Min(quantity, slot.Quantity);
                 slot.Quantity -= taken;
                 quantity -= taken;
             }
 
+            OnChanged();
             return true;
         }
 
@@ -102,13 +104,20 @@ namespace Assets.Scripts.Items.Models
                 source.Item = null;
                 source.Quantity = 0;
             }
-            else if (destination.Item == source.Item)
+            else if (SameItem(destination.Item, source.Item))
             {
                 int canMove = destination.Item.Data.StackLimit - destination.Quantity;
                 int moved = Math.Min(canMove, source.Quantity);
                 source.Quantity -= moved;
                 destination.Quantity += moved;
             }
+
+            OnChanged();
+        }
+
+        private bool SameItem(Item a, Item b)
+        {
+            return a?.Data == b?.Data;
         }
     }
 }

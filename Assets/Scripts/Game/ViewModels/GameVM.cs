@@ -1,11 +1,12 @@
-﻿using Assets.Scripts.Game.Services;
+﻿using Assets.Scripts.Common;
+using Assets.Scripts.Game.Services;
 using Assets.Scripts.Items.Models;
 using Assets.Scripts.Items.ViewModels;
 using UnityEngine;
 
 namespace Assets.Scripts.Game.ViewModels
 {
-    public class GameVM
+    public class GameVM : ViewModel
     {
         private ItemContainer inventory;
         private readonly EventLoopService eventLoopService;
@@ -21,11 +22,16 @@ namespace Assets.Scripts.Game.ViewModels
             InventoryVM = new ItemContainerVM(inventory);
         }
 
+        public void Add(Item item)
+        {
+            inventory.Add(item, 1);
+        }
+
         private void EventLoopService_UpdateEvent()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                InventoryVM.Visible.Value = !InventoryVM.Visible.Value;
+                InventoryVM.Visible = !InventoryVM.Visible;
             }
         }
     }

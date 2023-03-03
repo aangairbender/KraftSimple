@@ -9,50 +9,41 @@ namespace Assets.Scripts.Items.Views
     public class SlotView : MonoBehaviour,
         IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
     {
-        [SerializeField] private Image item;
+        [SerializeField] private Image itemImage;
         [SerializeField] private GameObject quantityRoot;
         [SerializeField] private TextMeshProUGUI quantityCaption;
 
-        private Slot slot;
+        private Item item;
+        private int quantity;
+
+        public Item Item
+        {
+            get => item;
+            set
+            {
+                item = value;
+                PresentSlot();
+            }
+        }
+        public int Quantity
+        {
+            get => quantity;
+            set
+            {
+                quantity = value;
+                PresentSlot();
+            }
+        }
+
         private GameObject dragPhantom;
-
-        public void SetSlot(Slot slot)
-        {
-            UnsubscribeFromSlot();
-            this.slot = slot;
-            SubscribeToSlot();
-            PresentSlot();
-        }
-
-        private void OnDestroy()
-        {
-            UnsubscribeFromSlot();
-        }
-
-        private void SubscribeToSlot()
-        {
-            //slot.OnChanged += Slot_OnChanged;
-        }
-
-        private void UnsubscribeFromSlot()
-        {
-            //if (slot == null) return;
-
-            //slot.OnChanged -= Slot_OnChanged;
-        }
-
-        private void Slot_OnChanged()
-        {
-            PresentSlot();
-        }
 
         private void PresentSlot()
         {
-            //item.sprite = slot.Item?.Sprite;
-            quantityCaption.text = slot.Quantity.ToString();
-            quantityRoot.SetActive(slot.Quantity > 1);
+            itemImage.sprite = item?.Data?.Sprite;
+            quantityCaption.text = quantity.ToString();
+            quantityRoot.SetActive(quantity > 1);
 
-            item.gameObject.SetActive(slot.Item != null);
+            itemImage.gameObject.SetActive(item != null);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -85,7 +76,7 @@ namespace Assets.Scripts.Items.Views
         public void OnDrop(PointerEventData eventData)
         {
             var dropped = eventData.pointerDrag;
-            var sourceSlot = dropped.GetComponent<SlotView>().slot;
+            //var sourceSlot = dropped.GetComponent<SlotView>().slot;
             //container.Move(sourceSlot, slot);
         }
     }

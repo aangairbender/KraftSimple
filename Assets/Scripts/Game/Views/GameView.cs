@@ -1,11 +1,6 @@
 ﻿using Assets.Scripts.Common;
 using Assets.Scripts.Game.ViewModels;
 using Assets.Scripts.Items.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.Game.Views
@@ -14,14 +9,9 @@ namespace Assets.Scripts.Game.Views
     {
         [SerializeField] private ItemContainerView inventory;
 
-        protected override void OnViewModelSet()
+        protected override void SetupViewModelBindings()
         {
-            inventory.ViewModel = ViewModel.InventoryVM;
-        }
-
-        protected override void OnViewModelUnset()
-        {
-            inventory.ViewModel = null;
+            Bind(vm => vm.InventoryVM, () => inventory.ViewModel = ViewModel.InventoryVM);
         }
     }
 }
