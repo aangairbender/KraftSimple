@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Game.Services;
-using Assets.Scripts.Game.ViewModels;
+﻿using Assets.Scripts.Game.ViewModels;
 using Assets.Scripts.Game.Views;
 using Assets.Scripts.Items.Data;
 using Assets.Scripts.Items.Models;
@@ -10,7 +9,6 @@ namespace Assets.Scripts.Game
     public class EntryPoint : MonoBehaviour
     {
         [SerializeField] private GameView gameView;
-        [SerializeField] private EventLoopService eventLoopService;
 
         [SerializeField] private ItemData num1Item;
         [SerializeField] private ItemData num2Item;
@@ -19,7 +17,7 @@ namespace Assets.Scripts.Game
 
         private void Start()
         {
-            gameVm = new GameVM(eventLoopService);
+            gameVm = new GameVM();
             gameView.ViewModel = gameVm;
         }
 
