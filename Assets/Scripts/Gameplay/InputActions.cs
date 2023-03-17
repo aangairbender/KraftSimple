@@ -15,12 +15,14 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public partial class @InputActions: IInputActionCollection2, IDisposable
+namespace Kraft.Gameplay
 {
-    public InputActionAsset asset { get; }
-    public @InputActions()
+    public partial class @InputActions: IInputActionCollection2, IDisposable
     {
-        asset = InputActionAsset.FromJson(@"{
+        public InputActionAsset asset { get; }
+        public @InputActions()
+        {
+            asset = InputActionAsset.FromJson(@"{
     ""name"": ""InputActions"",
     ""maps"": [
         {
@@ -158,144 +160,145 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": []
 }");
+            // Character
+            m_Character = asset.FindActionMap("Character", throwIfNotFound: true);
+            m_Character_Movement = m_Character.FindAction("Movement", throwIfNotFound: true);
+            m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
+            m_Character_Look = m_Character.FindAction("Look", throwIfNotFound: true);
+            m_Character_Sprint = m_Character.FindAction("Sprint", throwIfNotFound: true);
+        }
+
+        public void Dispose()
+        {
+            UnityEngine.Object.Destroy(asset);
+        }
+
+        public InputBinding? bindingMask
+        {
+            get => asset.bindingMask;
+            set => asset.bindingMask = value;
+        }
+
+        public ReadOnlyArray<InputDevice>? devices
+        {
+            get => asset.devices;
+            set => asset.devices = value;
+        }
+
+        public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
+
+        public bool Contains(InputAction action)
+        {
+            return asset.Contains(action);
+        }
+
+        public IEnumerator<InputAction> GetEnumerator()
+        {
+            return asset.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Enable()
+        {
+            asset.Enable();
+        }
+
+        public void Disable()
+        {
+            asset.Disable();
+        }
+
+        public IEnumerable<InputBinding> bindings => asset.bindings;
+
+        public InputAction FindAction(string actionNameOrId, bool throwIfNotFound = false)
+        {
+            return asset.FindAction(actionNameOrId, throwIfNotFound);
+        }
+
+        public int FindBinding(InputBinding bindingMask, out InputAction action)
+        {
+            return asset.FindBinding(bindingMask, out action);
+        }
+
         // Character
-        m_Character = asset.FindActionMap("Character", throwIfNotFound: true);
-        m_Character_Movement = m_Character.FindAction("Movement", throwIfNotFound: true);
-        m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
-        m_Character_Look = m_Character.FindAction("Look", throwIfNotFound: true);
-        m_Character_Sprint = m_Character.FindAction("Sprint", throwIfNotFound: true);
-    }
-
-    public void Dispose()
-    {
-        UnityEngine.Object.Destroy(asset);
-    }
-
-    public InputBinding? bindingMask
-    {
-        get => asset.bindingMask;
-        set => asset.bindingMask = value;
-    }
-
-    public ReadOnlyArray<InputDevice>? devices
-    {
-        get => asset.devices;
-        set => asset.devices = value;
-    }
-
-    public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
-
-    public bool Contains(InputAction action)
-    {
-        return asset.Contains(action);
-    }
-
-    public IEnumerator<InputAction> GetEnumerator()
-    {
-        return asset.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public void Enable()
-    {
-        asset.Enable();
-    }
-
-    public void Disable()
-    {
-        asset.Disable();
-    }
-
-    public IEnumerable<InputBinding> bindings => asset.bindings;
-
-    public InputAction FindAction(string actionNameOrId, bool throwIfNotFound = false)
-    {
-        return asset.FindAction(actionNameOrId, throwIfNotFound);
-    }
-
-    public int FindBinding(InputBinding bindingMask, out InputAction action)
-    {
-        return asset.FindBinding(bindingMask, out action);
-    }
-
-    // Character
-    private readonly InputActionMap m_Character;
-    private List<ICharacterActions> m_CharacterActionsCallbackInterfaces = new List<ICharacterActions>();
-    private readonly InputAction m_Character_Movement;
-    private readonly InputAction m_Character_Jump;
-    private readonly InputAction m_Character_Look;
-    private readonly InputAction m_Character_Sprint;
-    public struct CharacterActions
-    {
-        private @InputActions m_Wrapper;
-        public CharacterActions(@InputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_Character_Movement;
-        public InputAction @Jump => m_Wrapper.m_Character_Jump;
-        public InputAction @Look => m_Wrapper.m_Character_Look;
-        public InputAction @Sprint => m_Wrapper.m_Character_Sprint;
-        public InputActionMap Get() { return m_Wrapper.m_Character; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(CharacterActions set) { return set.Get(); }
-        public void AddCallbacks(ICharacterActions instance)
+        private readonly InputActionMap m_Character;
+        private List<ICharacterActions> m_CharacterActionsCallbackInterfaces = new List<ICharacterActions>();
+        private readonly InputAction m_Character_Movement;
+        private readonly InputAction m_Character_Jump;
+        private readonly InputAction m_Character_Look;
+        private readonly InputAction m_Character_Sprint;
+        public struct CharacterActions
         {
-            if (instance == null || m_Wrapper.m_CharacterActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_CharacterActionsCallbackInterfaces.Add(instance);
-            @Movement.started += instance.OnMovement;
-            @Movement.performed += instance.OnMovement;
-            @Movement.canceled += instance.OnMovement;
-            @Jump.started += instance.OnJump;
-            @Jump.performed += instance.OnJump;
-            @Jump.canceled += instance.OnJump;
-            @Look.started += instance.OnLook;
-            @Look.performed += instance.OnLook;
-            @Look.canceled += instance.OnLook;
-            @Sprint.started += instance.OnSprint;
-            @Sprint.performed += instance.OnSprint;
-            @Sprint.canceled += instance.OnSprint;
-        }
+            private @InputActions m_Wrapper;
+            public CharacterActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Movement => m_Wrapper.m_Character_Movement;
+            public InputAction @Jump => m_Wrapper.m_Character_Jump;
+            public InputAction @Look => m_Wrapper.m_Character_Look;
+            public InputAction @Sprint => m_Wrapper.m_Character_Sprint;
+            public InputActionMap Get() { return m_Wrapper.m_Character; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(CharacterActions set) { return set.Get(); }
+            public void AddCallbacks(ICharacterActions instance)
+            {
+                if (instance == null || m_Wrapper.m_CharacterActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_CharacterActionsCallbackInterfaces.Add(instance);
+                @Movement.started += instance.OnMovement;
+                @Movement.performed += instance.OnMovement;
+                @Movement.canceled += instance.OnMovement;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
+                @Sprint.started += instance.OnSprint;
+                @Sprint.performed += instance.OnSprint;
+                @Sprint.canceled += instance.OnSprint;
+            }
 
-        private void UnregisterCallbacks(ICharacterActions instance)
-        {
-            @Movement.started -= instance.OnMovement;
-            @Movement.performed -= instance.OnMovement;
-            @Movement.canceled -= instance.OnMovement;
-            @Jump.started -= instance.OnJump;
-            @Jump.performed -= instance.OnJump;
-            @Jump.canceled -= instance.OnJump;
-            @Look.started -= instance.OnLook;
-            @Look.performed -= instance.OnLook;
-            @Look.canceled -= instance.OnLook;
-            @Sprint.started -= instance.OnSprint;
-            @Sprint.performed -= instance.OnSprint;
-            @Sprint.canceled -= instance.OnSprint;
-        }
+            private void UnregisterCallbacks(ICharacterActions instance)
+            {
+                @Movement.started -= instance.OnMovement;
+                @Movement.performed -= instance.OnMovement;
+                @Movement.canceled -= instance.OnMovement;
+                @Jump.started -= instance.OnJump;
+                @Jump.performed -= instance.OnJump;
+                @Jump.canceled -= instance.OnJump;
+                @Look.started -= instance.OnLook;
+                @Look.performed -= instance.OnLook;
+                @Look.canceled -= instance.OnLook;
+                @Sprint.started -= instance.OnSprint;
+                @Sprint.performed -= instance.OnSprint;
+                @Sprint.canceled -= instance.OnSprint;
+            }
 
-        public void RemoveCallbacks(ICharacterActions instance)
-        {
-            if (m_Wrapper.m_CharacterActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
+            public void RemoveCallbacks(ICharacterActions instance)
+            {
+                if (m_Wrapper.m_CharacterActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
 
-        public void SetCallbacks(ICharacterActions instance)
-        {
-            foreach (var item in m_Wrapper.m_CharacterActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_CharacterActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
+            public void SetCallbacks(ICharacterActions instance)
+            {
+                foreach (var item in m_Wrapper.m_CharacterActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_CharacterActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
         }
-    }
-    public CharacterActions @Character => new CharacterActions(this);
-    public interface ICharacterActions
-    {
-        void OnMovement(InputAction.CallbackContext context);
-        void OnJump(InputAction.CallbackContext context);
-        void OnLook(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
+        public CharacterActions @Character => new CharacterActions(this);
+        public interface ICharacterActions
+        {
+            void OnMovement(InputAction.CallbackContext context);
+            void OnJump(InputAction.CallbackContext context);
+            void OnLook(InputAction.CallbackContext context);
+            void OnSprint(InputAction.CallbackContext context);
+        }
     }
 }
