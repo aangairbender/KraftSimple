@@ -1,0 +1,20 @@
+{
+    "name": "Kraft.ConnectionManagement",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:c672f5372b1d14b42861c2f3bd918820",
+        "GUID:62a727f5d9532c74084e91e9066df43d",
+        "GUID:f2d49d9fa7e7eb3418e39723a7d3b92f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
