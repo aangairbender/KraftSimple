@@ -32,13 +32,13 @@ namespace Kraft.ConnectionManagement
 
         private void StartHostFailed()
         {
-            // m_ConnectStatusPublisher.Publish(ConnectStatus.StartHostFailed);
+            m_ConnectStatusPublisher.Publish(ConnectStatus.StartHostFailed);
             m_ConnectionManager.ChangeState(m_ConnectionManager.m_Offline);
         }
 
         public override void OnServerStarted()
         {
-            // m_ConnectStatusPublisher.Publish(ConnectStatus.Success);
+            m_ConnectStatusPublisher.Publish(ConnectStatus.Success);
             m_ConnectionManager.ChangeState(m_ConnectionManager.m_Hosting);
         }
 

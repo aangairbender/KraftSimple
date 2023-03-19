@@ -1,6 +1,4 @@
-﻿using Codice.Client.Common;
-using Kraft.SceneManagement;
-using System;
+﻿using Kraft.SceneManagement;
 using UnityEngine.SceneManagement;
 
 namespace Kraft.ConnectionManagement
