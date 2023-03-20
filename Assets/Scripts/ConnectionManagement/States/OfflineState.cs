@@ -3,16 +3,15 @@ using UnityEngine.SceneManagement;
 
 namespace Kraft.ConnectionManagement
 {
-    public class OfflineState : ConnectionState
+    internal class OfflineState : ConnectionState
     {
-        const string k_MainMenuSceneName = "MainMenu";
-
         public override void Enter()
         {
             m_ConnectionManager.NetworkManager.Shutdown();
-            if (SceneManager.GetActiveScene().name != k_MainMenuSceneName)
+            // TODO: replace this with proper code (no scene management in connection management)
+            if (SceneManager.GetActiveScene().name != "MainMenu")
             {
-                SceneLoaderWrapper.Instance.LoadScene(k_MainMenuSceneName);
+                SceneLoaderWrapper.Instance.LoadScene("MainMenu", useNetworkSceneManager: false);
             }
         }
 

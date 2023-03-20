@@ -17,8 +17,18 @@ namespace Kraft.ConnectionManagement
         [Inject] NetworkManager m_NetworkManager;
         public NetworkManager NetworkManager => m_NetworkManager;
 
+        [Inject]
+        IObjectResolver m_Resolver;
+
+        public int ReconnectAttempts = 2;
+        public int MaxConnectedPlayers = 8;
+
         internal readonly OfflineState m_Offline = new OfflineState();
         internal readonly StartingHostState m_StartingHost = new StartingHostState();
+        internal readonly HostingState m_Hosting = new HostingState();
+        internal readonly ClientConnectingState m_ClientConnecting = new ClientConnectingState();
+        internal readonly ClientReconnectingState m_ClientReconnecting = new ClientReconnectingState();
+        internal readonly ClientConnectedState m_ClientConnected = new ClientConnectedState();
 
         private void Awake()
         {
@@ -27,6 +37,14 @@ namespace Kraft.ConnectionManagement
 
         private void Start()
         {
+            var states = new List<ConnectionState>() {
+                m_Offline, m_StartingHost, m_Hosting, m_ClientConnecting, m_ClientReconnecting, m_ClientConnected
+            };
+            foreach (var state in states)
+            {
+                m_Resolver.Inject(state);
+            }
+
             m_CurrentState = m_Offline;
 
             NetworkManager.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
@@ -79,6 +97,21 @@ namespace Kraft.ConnectionManagement
             NetworkManager.ConnectionApprovalResponse response)
         {
             m_CurrentState?.ApprovalCheck(request, response);
+        }
+
+        public void StartClientIp(string playerName, string ipaddress, int port)
+        {
+            m_CurrentState.StartClientIP(playerName, ipaddress, port);
+        }
+
+        public void StartHostIp(string playerName, string ipaddress, int port)
+        {
+            m_CurrentState.StartHostIP(playerName, ipaddress, port);
+        }
+
+        public void RequestShutdown()
+        {
+            m_CurrentState.OnUserRequestedShutdown();
         }
     }
 }

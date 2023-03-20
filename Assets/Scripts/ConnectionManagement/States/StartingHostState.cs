@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Kraft.ConnectionManagement
 {
-    public class StartingHostState : OnlineState
+    internal class StartingHostState : OnlineState
     {
         ConnectionMethod m_ConnectionMethod;
 
@@ -52,8 +52,7 @@ namespace Kraft.ConnectionManagement
             var payload = System.Text.Encoding.UTF8.GetString(payloadBytes);
             var payloadData = JsonUtility.FromJson<ConnectionPayload>(payload);
 
-            // SessionManager<SessionPlayerData>.Instance.SetupConnectingPlayerSessionData(clientId, connectionPayload.playerId,
-            //     new SessionPlayerData(clientId, connectionPayload.playerName, new NetworkGuid(), 0, true));
+            SessionManager.Instance.SetupConnectingPlayerSessionData(clientId, payloadData.playerId, payloadData.playerName);
 
             response.Approved = true;
             response.CreatePlayerObject = true;

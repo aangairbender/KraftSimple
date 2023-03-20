@@ -3,7 +3,7 @@
     /// <summary>
     /// Base class representing an online connection state.
     /// </summary>
-    public abstract class OnlineState : ConnectionState
+    internal abstract class OnlineState : ConnectionState
     {
         public override void OnUserRequestedShutdown()
         {

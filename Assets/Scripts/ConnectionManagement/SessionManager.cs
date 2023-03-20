@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Kraft.ConnectionManagement
 {
-    public interface ISessionPlayerData
+    public struct SessionPlayerData
     {
-        bool IsConnected { get; set; }
-        ulong ClientId { get; set; }
+        public bool IsConnected { get; set; }
+        public ulong ClientId { get; set; }
+        public string PlayerName { get; set; }
     }
 
     /// <summary>
@@ -22,14 +24,13 @@ namespace Kraft.ConnectionManagement
     /// intercept it and reuse it to impersonate the original user. We are currently investigating this to offer a
     /// solution that handles security better.
     /// </remarks>
-    /// <typeparam name="T"></typeparam>
-    public class SessionManager<T> where T : struct, ISessionPlayerData
+    public class SessionManager
     {
-        static SessionManager<T> s_Instance;
-        public static SessionManager<T> Instance => s_Instance ??= new SessionManager<T>();
+        static SessionManager s_Instance;
+        public static SessionManager Instance => s_Instance ??= new SessionManager();
 
         readonly Dictionary<ulong, string> m_ClientIdToPlayerId = new Dictionary<ulong, string>();
-        readonly Dictionary<string, T> m_PlayerData = new Dictionary<string, T>();
+        readonly Dictionary<string, SessionPlayerData> m_PlayerData = new Dictionary<string, SessionPlayerData>();
 
         bool m_HasSessionStarted;
 
@@ -58,6 +59,78 @@ namespace Kraft.ConnectionManagement
         public bool IsDuplicateConnection(string playerId)
         {
             return m_PlayerData.TryGetValue(playerId, out var playerData) && playerData.IsConnected;
+        }
+
+        public void SetupConnectingPlayerSessionData(ulong clientId, string playerId, string playerName)
+        {
+            if (IsDuplicateConnection(playerId))
+            {
+                Debug.LogError($"Player ID {playerId} already exists. This is a duplicate connection. Rejecting this session data.");
+                return;
+            }
+
+            var isReconnecting = m_PlayerData.TryGetValue(playerId, out var playerData) && !playerData.IsConnected;
+
+            if (isReconnecting)
+            {
+                Debug.Log($"Player ID {playerId} is reconnecting");
+            }
+            else
+            {
+                Debug.Log($"New player ID {playerId} session created");
+            }
+
+            playerData.ClientId = clientId;
+            playerData.PlayerName = playerName;
+            playerData.IsConnected = true;
+
+            m_ClientIdToPlayerId[clientId] = playerId;
+            m_PlayerData[playerId] = playerData;
+        }
+
+        public void StartSession()
+        {
+            m_HasSessionStarted = true;
+        }
+
+        public void EndSession()
+        {
+            m_HasSessionStarted = false;
+        }
+
+        public void EndServer()
+        {
+            m_PlayerData.Clear();
+            m_ClientIdToPlayerId.Clear();
+            m_HasSessionStarted = false;
+        }
+
+        public SessionPlayerData? GetPlayerData(string playerId)
+        {
+            if (m_PlayerData.TryGetValue(playerId, out var playerData))
+            {
+                return playerData;
+            }
+
+            Debug.Log($"No PlayerData of matching player ID found: {playerId}");
+            return null;
+        }
+
+        public string GetPlayerId(ulong clientId)
+        {
+            if (m_ClientIdToPlayerId.TryGetValue(clientId, out var playerId))
+            {
+                return playerId;
+            }
+
+            Debug.Log($"No client player ID found mapped to the given client ID: {clientId}");
+            return null;
+        }
+
+        public SessionPlayerData? GetPlayerData(ulong clientId)
+        {
+            var playerId = GetPlayerId(clientId);
+            return playerId != null ? GetPlayerData(playerId) : null;
         }
     }
 }
